@@ -1,0 +1,4 @@
+# edit this file an rename to private.py
+# be careful no to commit this file
+client_id ='myid'
+client_secret = 'mysecret'
