@@ -5,7 +5,8 @@ import time
 import os
 
 from peUtils import writeJson, getToken
-datafolder = "data"
+datafolder = "data/referentiels"
+os.makedirs(datafolder,exist_ok=True)
 
 ##
 ##   obtain a token before calling the API for the first time
