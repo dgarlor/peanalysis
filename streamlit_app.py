@@ -13,7 +13,7 @@ import tensorflow as tf
 
 datadir = "stream_data"
 
-st.write("""# Estimation du nombre de demandeurs d'emploi""")
+st.write("""# Estimation du nombre de demandeurs d'emploi par deep learning""")
 st.write(" Ce projet explore la possibilité de estimer le nombre de demandeurs d'emploi dans le mois prochain en utilisant seulement le nombre de demandeurs d'emploi du mois actuel")
 
 st.write("- Pour plus d'information sur les donneés: https://pole-emploi.io/data/api/infotravail?tabgroup-api=documentation&doc-section=api-doc-section-caracteristiques")
@@ -75,3 +75,17 @@ if st.checkbox("Montrer les demandeurs d'emploi par catégorie"):
     
     
 st.write("## Modèle apprentissage simple")
+st.write(""" Nous allons proposer un première modèle avec des couches Dense
+- Entrées: MONTH  REGION_NAME  REGISTRATION_CATEGORY_CODE  DEMANDEURS(N)
+- Sortie: DEMANDEURS(N+1)
+    """)
+
+
+demandeur_mean = np.mean(train_data, axis=0)[-2]
+demandeur_std = np.std(train_data, axis=0)[-2]
+model = firstmodel(use_embeddings, regions, categories,
+                   demandeur_mean, demandeur_std)
+try:
+    tf.keras.utils.plot_model(model, show_shapes=True, rankdir="LR")
+except:
+    print(" -- Error loading model graph")
