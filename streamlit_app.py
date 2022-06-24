@@ -82,7 +82,7 @@ if st.checkbox("Montrer les demandeurs d'emploi par catégorie"):
 
 
 st.write("## Modèle apprentissage simple")
-st.write(""" Nous allons proposer un première modèle avec des couches Dense
+st.write(""" Nous allons proposer un premier modèle avec des couches Denses
 - Entrées: MONTH  REGION_NAME  REGISTRATION_CATEGORY_CODE  DEMANDEURS(N)
 - Sortie: DEMANDEURS(N+1)
 
