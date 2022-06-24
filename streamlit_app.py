@@ -165,7 +165,7 @@ ax.set_title("Relative error (%)")
 st.write(fig)
 
 # Testing the model
-st.write("## Test le modèle")
+st.write("## Tester le modèle")
 selectedRegion = st.selectbox("Sélectionner une région:", regions)
 selectedMonth = st.selectbox("Sélectionner un mois:", [i for i in range(1,13)])
 selectedCategory = st.selectbox("Sélectionner une catégorie:", categories)
