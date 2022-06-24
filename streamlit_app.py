@@ -127,6 +127,11 @@ else:
     xx = np.load(f"{datadir}/results_{suffix}.npy")
 yy = (test_y*demandeur_std)+demandeur_mean
 
+mean_sq_error = np.sqrt((xx[:, 0]-yy)**2).mean()
+st.write(" Mean squared error: %f " % (mean_sq_error))
+rel_error = 100*(xx[:, 0]-yy)/yy
+st.write(" Relative Error: %1.3f ± %1.3f %% " %
+         (rel_error.mean(), rel_error.std()))
 
 fig, ax = plt.subplots(layout='constrained')
 plt.plot([0, 60000], [0, 60000])
@@ -151,13 +156,6 @@ ax.set_ylabel("Estimated")
 ax.legend()
 ax.set_title("Erreur en fonction de la catégorie")
 st.write(fig)
-
-
-mean_sq_error = np.sqrt((xx[:, 0]-yy)**2).mean()
-st.write(" Mean squared error: %f " % (mean_sq_error))
-rel_error = 100*(xx[:, 0]-yy)/yy
-st.write(" Relative Error: %1.3f ± %1.3f %% " %
-         (rel_error.mean(), rel_error.std()))
 
 fig, ax = plt.subplots(layout='constrained')
 plt.scatter(yy, rel_error,
