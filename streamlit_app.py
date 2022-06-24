@@ -10,6 +10,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import numpy as np
 
 datadir = "stream_data"
 
@@ -78,14 +79,78 @@ st.write("## Modèle apprentissage simple")
 st.write(""" Nous allons proposer un première modèle avec des couches Dense
 - Entrées: MONTH  REGION_NAME  REGISTRATION_CATEGORY_CODE  DEMANDEURS(N)
 - Sortie: DEMANDEURS(N+1)
+
     """)
+    
+from demandeurs_keras_preprocessing import prepareData
+from demandeurs_keras_model import firstmodel
+(train_x, train_y), (test_x, test_y), demandeur_mean, demandeur_std = prepareData(df)
 
+use_embeddings = st.checkbox("Utilisation d'embeddings pour les entrée (par défaut one hot encoding)")
+suffix = "emb" if use_embeddings else "oneh"
 
-demandeur_mean = np.mean(train_data, axis=0)[-2]
-demandeur_std = np.std(train_data, axis=0)[-2]
 model = firstmodel(use_embeddings, regions, categories,
                    demandeur_mean, demandeur_std)
+model.load_weights(f"{datadir}/learned_model_{suffix}.keras")
 try:
     tf.keras.utils.plot_model(model, show_shapes=True, rankdir="LR")
 except:
-    print(" -- Error loading model graph")
+    #st.write(" -- Error loading model graph figure")
+    stringlist = []
+    model.summary(print_fn=lambda x: stringlist.append(x))
+    st.text("\n".join(stringlist))
+    
+st.write("## Apprentissage")
+
+history = pd.read_pickle(f"{datadir}/learned_history_{suffix}.pkl")
+history = history.drop(columns=["accuracy","val_accuracy"])
+history.plot.line()
+
+fig, ax = plt.subplots(layout='constrained')
+ax.plot(history["loss"], label="Apprentissage")  # Plot some data on the axes.
+ax.plot(history["val_loss"], label="Validation")  # Plot some data on the axes.
+ax.set_title("Evolution de la fonction de coût")  # Add a title to the axes.
+ax.legend();  # Add a legend.
+st.write(fig)
+
+## Show difference
+test_output = model.predict(test_x)
+xx = (test_output*demandeur_std)+demandeur_mean
+yy = (test_y*demandeur_std)+demandeur_mean
+
+fig, ax = plt.subplots(layout='constrained')
+plt.plot([0,60000],[0,60000])
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b']
+for i,r in enumerate(regions):
+    plt.scatter(yy[test_x['REGION_NAME'] == i], xx[test_x['REGION_NAME'] == i],
+                c=colors[i], label=r, alpha=0.5)
+ax.set_xlabel("Expected")
+ax.set_ylabel("Estimated")
+ax.legend()
+ax.set_title("Erreur en fonction de la région")
+st.write(fig)
+
+fig, ax = plt.subplots(layout='constrained')
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b']
+plt.plot([0,60000],[0,60000])
+for i,c in enumerate(categories):
+    plt.scatter(yy[test_x['REGISTRATION_CATEGORY_CODE'] == i], xx[test_x['REGISTRATION_CATEGORY_CODE'] == i],
+                c=colors[i], label=c, alpha=0.5)
+ax.set_xlabel("Expected")
+ax.set_ylabel("Estimated")
+ax.legend()
+ax.set_title("Erreur en fonction de la catégorie")
+st.write(fig)
+
+
+mean_sq_error = np.sqrt((xx[:,0]-yy)**2).mean()
+st.write(" Mean squared error: %f "%(mean_sq_error))
+rel_error =100*(xx[:,0]-yy)/yy
+st.write(" Relative Error: %1.3f ± %1.3f %% "%(rel_error.mean(), rel_error.std()))
+
+fig, ax = plt.subplots(layout='constrained')
+plt.scatter(yy, rel_error,
+            c=colors[i], label=c, alpha=0.5)
+ax.set_xlabel("Expected")
+ax.set_title("Relative error (%)")
+st.write(fig)
