@@ -11,6 +11,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
+datadir = "stream_data"
+
 st.write("""# Estimation du nombre de demandeurs d'emploi""")
 st.write(" Ce projet explore la possibilité de estimer le nombre de demandeurs d'emploi dans le mois prochain en utilisant seulement le nombre de demandeurs d'emploi du mois actuel")
 
@@ -26,12 +28,11 @@ def loadJsonData(jsonfile):
     return pd.DataFrame(x["result"]["records"])
 
 ## READING DATA
-df = pd.read_pickle(".private/sagg_Demandeurs2012.2016.pkl")
+df = pd.read_pickle(f"{datadir}/sagg_Demandeurs2012.2016.pkl")
 regions = df.REGION_NAME.unique()
 categories = df.REGISTRATION_CATEGORY_CODE.unique()
 
-requete = loadJsonData(
-    ".private/rp_141a3516-dd5a-49ad-9887-feacf9b64456_o0.json")
+requete = loadJsonData( f"{datadir}/rp_141a3516-dd5a-49ad-9887-feacf9b64456_o0.json")
 
 st.write("Les colonnes disponibles* dans l'api sont les suivantes:")
 st.write(requete.columns)
