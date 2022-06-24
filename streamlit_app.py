@@ -165,3 +165,18 @@ plt.scatter(yy, rel_error,
 ax.set_xlabel("Expected")
 ax.set_title("Relative error (%)")
 st.write(fig)
+
+# Testing the model
+st.write("## Test le modèle")
+selectedRegion = st.selectbox("Sélectionner une région:", regions)
+selectedMonth = st.selectbox("Sélectionner un mois:", [i for i in range(1,13)])
+selectedCategory = st.selectbox("Sélectionner une catégorie:", categories)
+selectedDemandeur = st.slider("Séléctionner un nombre de demandeurs:",min_value=0, max_value=70000, value=10000)
+
+inputlabels = ['MONTH', 'REGION_NAME', 'REGISTRATION_CATEGORY_CODE', 'DEMANDEURS']
+inputdata = [selectedMonth-1, regions.tolist().index(selectedRegion), categories.tolist().index(selectedCategory), selectedDemandeur]
+
+inputDict = {k:np.array(v,dtype="int32")[np.newaxis,np.newaxis] for k,v in zip(inputlabels,inputdata)}
+
+outDemandeur = (model.predict(inputDict)*demandeur_std)+demandeur_mean
+st.metric(label="Estimated", value=int(outDemandeur), delta=int(outDemandeur-selectedDemandeur))
