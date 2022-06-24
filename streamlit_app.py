@@ -17,7 +17,7 @@ import numpy as np
 datadir = "stream_data"
 
 st.write("""# Estimation du nombre de demandeurs d'emploi par deep learning""")
-st.write(" Ce projet explore la possibilité de estimer le nombre de demandeurs d'emploi dans le mois prochain en utilisant seulement le nombre de demandeurs d'emploi du mois actuel")
+st.write(" Ce projet explore la possibilité d'estimer le nombre de demandeurs d'emploi pour le mois suivant en utilisant seulement le nombre de demandeurs d'emploi du mois actuel")
 st.write("- Les sources se trouvent ici: https://github.com/dgarlor/peanalysis")
 st.write("- Pour plus d'information sur les donneés: https://pole-emploi.io/data/api/infotravail?tabgroup-api=documentation&doc-section=api-doc-section-caracteristiques")
 st.write("- Le référentiel utilisé est 'Statistiques sur le marché du travail' ")
@@ -44,8 +44,8 @@ st.write(requete.columns)
 st.write("_* La colonne IDENT n'est pas disponible qu'à partir 2015._")
 
 st.write("### Selection de données: 2012 - 2016")
-st.write("""Pour cet étude préliminaire on a limité les données utilisées par manque de temps ou des problèmes sur l'api:
-- Quelques mois en 2017 et 2019 semblent incompletes (taille de données est significativament inférieur aux autres mois). 
+st.write("""Pour cette étude préliminaire on a limité les données utilisées par manque de temps ou d'autres problèmes:
+- Quelques mois en 2017 et 2019 semblent incomplets (taille de données est significativament inférieur aux autres mois). 
 - Le changment de régions aurait obligé à recomposer les régions à partir des départements. On s'est limité à : %s
 """ % (", ".join(regions)))
 
