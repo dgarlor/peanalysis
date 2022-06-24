@@ -84,14 +84,12 @@ st.write(""" Nous allons proposer un première modèle avec des couches Dense
     
 from demandeurs_keras_preprocessing import prepareData
 from demandeurs_keras_model import firstmodel
-(train_x, train_y), (test_x, test_y), demandeur_mean, demandeur_std = prepareData(df)
+_,(test_x, test_y), demandeur_mean, demandeur_std = prepareData(df)
 
 use_embeddings = st.checkbox("Utilisation d'embeddings pour les entrée (par défaut one hot encoding)")
 suffix = "emb" if use_embeddings else "oneh"
-
 model = firstmodel(use_embeddings, regions, categories,
                    demandeur_mean, demandeur_std)
-model.load_weights(f"{datadir}/learned_model_{suffix}.keras")
 try:
     tf.keras.utils.plot_model(model, show_shapes=True, rankdir="LR")
 except:
@@ -99,6 +97,7 @@ except:
     stringlist = []
     model.summary(print_fn=lambda x: stringlist.append(x))
     st.text("\n".join(stringlist))
+
     
 st.write("## Apprentissage")
 
@@ -114,9 +113,16 @@ ax.legend();  # Add a legend.
 st.write(fig)
 
 ## Show difference
-test_output = model.predict(test_x)
-xx = (test_output*demandeur_std)+demandeur_mean
+if False:
+    model.load_weights(f"{datadir}/learned_model_{suffix}.keras")
+    test_output = model.predict(test_x)
+    xx = (test_output*demandeur_std)+demandeur_mean
+    np.save(f"{datadir}/results_{suffix}.npy",xx)
+else:
+    xx = np.load(f"{datadir}/results_{suffix}.npy")
 yy = (test_y*demandeur_std)+demandeur_mean
+
+
 
 fig, ax = plt.subplots(layout='constrained')
 plt.plot([0,60000],[0,60000])
